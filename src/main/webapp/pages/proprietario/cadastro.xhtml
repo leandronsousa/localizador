@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:p="http://primefaces.org/ui"
+   template="/WEB-INF/templates/default.xhtml">
+   <ui:define name="content">
+
+	<h:form id="formCadastroProprietario">
+
+		<p:outputPanel id="idPanelCid">
+			<input type="hidden" id="cid" name="cid" value="#{proprietarioViewHelper.conversation.id}" />
+		</p:outputPanel>
+	
+		<p:growl id="messages" showDetail="false" autoUpdate="true"/>
+        
+        <p:fieldset id="fieldsetCadastroProprietario" legend="#{resources['label.geral.cadastroProprietario']}">
+			
+			<p:panel header="#{resources['label.geral.dadosProprietario']}" 
+					id="panelCadastroProprietario" >
+			  	<p:panelGrid columns="2">
+			      	<h:outputLabel for="radioTipoPessoa" value="#{resources['label.geral.tipoPessoa']}"/>
+			      	<p:selectOneRadio id="radioTipoPessoa" required="true" immediate="true"
+			       			valueChangeListener="${proprietarioViewHelper.selecionarTipoPessoa}"
+			       			value="#{proprietarioViewHelper.proprietarioTO.proprietario.tipoPessoa}"
+			       			label="#{resources['label.geral.tipoPessoa']}">
+			       		<f:selectItem itemValue="#{resources['label.geral.pessoaFisica']}" 
+			       				itemLabel="#{resources['label.geral.pessoaFisica']}"/>
+			       		<f:selectItem itemValue="#{resources['label.geral.pessoaJuridica']}" 
+			       				itemLabel="#{resources['label.geral.pessoaJuridica']}"/>
+					<p:ajax immediate="true" event="change" update="formCadastroProprietario"/>
+			       	</p:selectOneRadio>
+				</p:panelGrid>
+				<p:spacer height="2px"/>	         
+		       <p:panelGrid columns="2" id="gridPessoaFisica" 
+			       		rendered="#{proprietarioViewHelper.proprietarioTO.proprietario.tipoPessoa eq 'PF'}">
+			       	<h:outputLabel for="inputNomePessoaFisica" value="#{resources['label.geral.nome']}"/>
+			       	<p:inputText value="#{proprietarioViewHelper.proprietarioTO.proprietario.pessoaFisica.nome}" 
+			       		required="true" maxlength="60" id="inputNomePessoaFisica" size="50"
+			       		label="#{resources['label.geral.nome']}"/>
+			       	<h:outputLabel for="inputCpf" value="#{resources['label.geral.cpf']}"/>
+			       	<p:inputMask mask="999.999.999-99" required="true" id="inputCpf" converter="CPFConverter"
+			       			value="#{proprietarioViewHelper.proprietarioTO.proprietario.pessoaFisica.cpf}"
+			       			label="#{resources['label.geral.cpf']}">
+				       	<f:validator validatorId="CPFCadastroValidator" />
+					</p:inputMask>	         
+		       </p:panelGrid>
+		       <p:panelGrid columns="2" id="gridPessoaJuridica"
+		       		rendered="#{proprietarioViewHelper.proprietarioTO.proprietario.tipoPessoa eq 'PJ'}">
+		       	<h:outputLabel for="inputRazaoSocial" value="#{resources['label.geral.razaoSocial']}"/>
+		       	<p:inputText value="#{proprietarioViewHelper.proprietarioTO.proprietario.pessoaJuridica.razaoSocial}"
+		       			required="true" maxlength="60" id="inputRazaoSocial" size="50"
+		       			label="#{resources['label.geral.razaoSocial']}"/>
+		       	<h:outputLabel for="inputNomeFantasia" value="#{resources['label.geral.nomeFantasia']}"/>
+		       	<p:inputText value="#{proprietarioViewHelper.proprietarioTO.proprietario.pessoaJuridica.nomeFantasia}" 
+		       			required="true" maxlength="60" id="inputNomeFantasia" size="50"
+		       			label="#{resources['label.geral.nomeFantasia']}"/>
+		       	<h:outputLabel for="inputCnpj" value="#{resources['label.geral.cnpj']}"/>
+		       	<p:inputMask mask="99.999.999/9999-99" required="true" id="inputCnpj" converter="CNPJConverter"
+		       			value="#{proprietarioViewHelper.proprietarioTO.proprietario.pessoaJuridica.cnpj}"
+		       			label="#{resources['label.geral.cnpj']}">
+		       		<f:validator validatorId="CNPJCadastroValidator"/>
+		       	</p:inputMask>
+		       </p:panelGrid>
+			</p:panel>
+			   
+			<p:spacer height="2px"/>
+			   
+			<p:panel id="panelDadosRastreamento" header="#{resources['label.geral.dadosRastreamento']}"> 
+			   	<p:panelGrid columns="2" id="gridDadosRastreamento">
+					<h:outputLabel for="inputImei" value="#{resources['label.geral.imei']}"/>
+					<p:inputMask mask="999999999999999" id="inputImei" label="#{resources['label.geral.imei']}"
+							value="#{proprietarioViewHelper.proprietarioTO.objetoRastreado.imei}"/>				
+					<h:outputLabel for="inputNomeObjetoRastreado" value="#{resources['label.geral.nome']}"/>
+					<p:inputText value="#{proprietarioViewHelper.proprietarioTO.objetoRastreado.nome}" 
+							maxlength="60" id="inputNomeObjetoRastreado" label="#{resources['label.geral.nome']}"/>
+					<h:outputLabel for="inputDDD" value="#{resources['label.geral.ddd']}"/>
+					<p:inputMask mask="99" id="inputDDD" label="#{resources['label.geral.ddd']}" size="3"
+							value="#{proprietarioViewHelper.proprietarioTO.objetoRastreado.ddd}"/>
+					<h:outputLabel for="inputTelefone" value="#{resources['label.geral.telefone']}"/>
+					<p:inputMask mask="99999999?9" id="inputTelefone" size="10" label="#{resources['label.geral.telefone']}"
+							value="#{proprietarioViewHelper.proprietarioTO.objetoRastreado.telefone}">
+					</p:inputMask>
+					<f:facet name="footer">
+			   			<p:commandButton value="#{resources['label.geral.incluir']}" partialSubmit="true" ajax="true"
+			   					update="formCadastroProprietario:panelDadosRastreamento, :formCadastroProprietario:panelButtons" 
+			   					process="formCadastroProprietario:panelDadosRastreamento"
+			   					icon="ui-icon-plus" style="margin:0" action="#{proprietarioViewHelper.incluirObjetoRastreado}"/>
+			 		</f:facet>
+			 	</p:panelGrid>
+			 	
+			 	<p:spacer height="2px"/>
+			 	
+			 	<p:dataTable id="tableObjetosCadastrados" var="objetoRastreado" editable="true"
+			 			rendered="#{not empty proprietarioViewHelper.proprietarioTO.proprietario.listaObjetoRastreado}"	
+			 			value="#{proprietarioViewHelper.proprietarioTO.proprietario.listaObjetoRastreado}">
+			 		<f:facet name="header">
+			 			<h:outputText value="#{resources['label.geral.objetosRastreados']}"/>
+			 		</f:facet>
+			 		<p:ajax event="rowEdit" listener="#{proprietarioViewHelper.editarObjetoRastreado}" 
+			 				update=":formCadastroProprietario:messages"/>
+			 		<p:ajax event="rowEditCancel" listener="#{proprietarioViewHelper.cancelarEdicaoObjetoRastreado}" 
+			 				update=":formCadastroProprietario:messages"/>
+			 		<p:column headerText="#{resources['label.geral.imei']}">
+			 			<p:cellEditor>
+			  			<f:facet name="output">
+			  				<h:outputText value="#{objetoRastreado.imei}"/>
+			  			</f:facet>
+			  			<f:facet name="input">
+			  				<p:inputText value="#{objetoRastreado.imei}" maxlength="15" required="true"/>
+			  			</f:facet>
+			  		</p:cellEditor>
+			 		</p:column>
+			 		<p:column headerText="#{resources['label.geral.nome']}">
+			 			<p:cellEditor>
+			  			<f:facet name="output">
+			   			<h:outputText value="#{objetoRastreado.nome}"/>
+			  			</f:facet>
+			  			<f:facet name="input">
+			  				<p:inputText value="#{objetoRastreado.nome}" maxlength="60" required="true"/>
+			  			</f:facet>
+			  		</p:cellEditor>
+			 		</p:column>
+			 		<p:column headerText="#{resources['label.geral.ddd']}">
+					<p:cellEditor>
+					<f:facet name="output">
+			   			<h:outputText value="#{objetoRastreado.ddd}"/>
+			  			</f:facet>
+			  			<f:facet name="input">
+			  				<p:inputText value="#{objetoRastreado.ddd}" maxlength="2" required="true"/>
+			  			</f:facet>
+			  		</p:cellEditor>
+			 		</p:column>
+			 		<p:column headerText="#{resources['label.geral.telefone']}">
+			 			<p:cellEditor>
+			  			<f:facet name="output">
+			   			<h:outputText value="#{objetoRastreado.telefone}"/>
+			  			</f:facet>
+			  			<f:facet name="input">
+			  				<p:inputText value="#{objetoRastreado.telefone}" maxlength="9" required="true"/>
+			  			</f:facet>
+			  		</p:cellEditor>
+			 		</p:column>
+			 		<p:column>
+			 			<p:rowEditor/>
+			 			<p:commandLink action="#{proprietarioViewHelper.excluirObjetoRastreado(objetoRastreado)}"
+			 					immediate="true" process="@this"
+			 					update=":formCadastroProprietario:panelDadosRastreamento, :formCadastroProprietario:panelButtons" >
+			 				<img border="0" style="border: 0;" alt="#{resources['label.geral.excluir']}" 
+			 						class="ui-icon ui-icon-trash" title="#{resources['label.geral.excluir']}"/>
+			 			</p:commandLink>
+			 		</p:column>
+			 	</p:dataTable>
+			</p:panel>
+			 
+			<p:spacer height="2px"/>
+			 
+			<p:panel id="panelUsuarios" header="#{resources['label.geral.usuarios']}"> 
+			 	<p:panelGrid columns="2" id="gridDadosUsuarios">
+			 		<h:outputLabel for="inputNomeUsuario" value="#{resources['label.geral.nome']}"/>
+			 		<p:inputText value="#{proprietarioViewHelper.proprietarioTO.usuario.nome}" 
+			     			maxlength="60" id="inputNomeUsuario" size="50" label="#{resources['label.geral.nome']}"/>
+			     	<h:outputLabel for="inputPerfilUsuario" value="#{resources['label.geral.perfil']}"/>
+			 		<p:selectOneMenu id="inputPerfilUsuario" label="#{resources['label.geral.perfil']}"
+			 				value="#{proprietarioViewHelper.proprietarioTO.usuario.perfilUsuario}"
+			 				converter="perfilUsuario">
+			 			<f:selectItem itemValue="" itemLabel="#{resources['label.geral.selecione']}" />
+			 			<f:selectItems value="#{combosBean.listaPerfilUsuarioSemAdmin}" var="perfilUsuario"
+			 					itemValue="#{perfilUsuario}" itemLabel="#{perfilUsuario.nome}"/>
+			 		</p:selectOneMenu>
+			     	<h:outputLabel for="inputLoginUsuario" value="#{resources['label.geral.login']}"/>
+			     	<p:inputText value="#{proprietarioViewHelper.proprietarioTO.usuario.login}"
+			     			maxlength="20" id="inputLoginUsuario" size="20" label="#{resources['label.geral.login']}"
+			     			valueChangeListener="#{proprietarioViewHelper.validarLogin}">
+			     		<p:ajax immediate="true" process="@this" event="blur" update="@this" />
+			     	</p:inputText>
+			     	<h:outputLabel for="senhaUsuario" value="#{resources['label.geral.senha']}"/>
+			     	<p:password value="#{proprietarioViewHelper.proprietarioTO.usuario.senha}" size="15" id="senhaUsuario"
+			     		 	feedback="true" maxlength="12" promptLabel="#{resources['label.geral.senha']}" 
+			     		 	strongLabel="#{resources['label.geral.senhaForte']}" label="#{resources['label.geral.senha']}"
+			     			goodLabel="#{resources['label.geral.senhaBoa']}" weakLabel="#{resources['label.geral.senhaFraca']}"/>
+			     	<f:facet name="footer">
+			 			<p:commandButton value="#{resources['label.geral.incluir']}" ajax="true" partialSubmit="true"
+			 					update="formCadastroProprietario:panelUsuarios, :formCadastroProprietario:panelButtons" 
+			 					process="formCadastroProprietario:panelUsuarios"
+			 					icon="ui-icon-plus" style="margin:0" action="#{proprietarioViewHelper.incluirUsuario}"/>
+					</f:facet>	
+				</p:panelGrid>
+				<p:spacer height="2px"/>
+				<p:dataTable id="tableUsuarios" var="usuario"
+						rendered="#{not empty proprietarioViewHelper.proprietarioTO.proprietario.listaUsuario}"
+						value="#{proprietarioViewHelper.proprietarioTO.proprietario.listaUsuario}">
+					<f:facet name="header">
+						<h:outputText value="#{resources['label.geral.usuarios']}"/>
+					</f:facet>
+					<p:column headerText="#{resources['label.geral.nome']}">
+						<h:outputText value="#{usuario.nome}"/>
+					</p:column>
+					<p:column headerText="#{resources['label.geral.perfil']}">
+						<h:outputText value="#{usuario.perfilUsuario.nome}"/>
+					</p:column>
+					<p:column headerText="#{resources['label.geral.login']}">
+						<h:outputText value="#{usuario.login}"/>
+					</p:column>
+					<p:column>
+			 			<p:commandLink action="#{proprietarioViewHelper.excluirUsuario(usuario)}"
+			 					immediate="true" update=":formCadastroProprietario:panelUsuarios, :formCadastroProprietario:panelButtons" 
+			 					process="@this">
+			 				<img border="0" style="border: 0;" alt="#{resources['label.geral.excluir']}" 
+			 						class="ui-icon ui-icon-trash" title="#{resources['label.geral.excluir']}"/>
+			 			</p:commandLink>
+			 		</p:column>
+				</p:dataTable>
+			</p:panel>
+	     	<p:spacer height="2px"/>
+			<p:panel id="panelButtons">
+		     	<p:commandButton value="#{resources['label.geral.gravar']}" 
+		     			action="#{proprietarioViewHelper.gravar}"
+		     			ajax="false" disabled="#{not proprietarioViewHelper.cadastroValido}"/>
+		     	<p:commandButton value="#{resources['label.geral.cancelar']}" 
+		     			action="/index.xhtml" immediate="true"/>
+	    	</p:panel>
+		    	
+		</p:fieldset>   
+	</h:form>
+</ui:define>
+</ui:composition>

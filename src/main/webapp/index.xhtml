@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:p="http://primefaces.org/ui"
+   template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+	<h:form>
+		<div style="float: left;">
+	    	<img src="#{request.contextPath}/resources/gfx/mapa.png"/>
+	    </div>
+	    <div style="float: left; margin-left: 40px">
+			<h2><h:outputText value="#{resources['label.geral.tituloProjeto']}"/></h2>
+			<ul>
+				<li>
+					<h:outputText value="#{resources['label.geral.localizeSeuCarro']}"/>
+				</li>
+				<li>
+					<h:outputText value="#{resources['label.geral.ondeSeuCarroEsteve']}"/>
+				</li>
+			</ul>
+			<p:commandLink action="/pages/proprietario/cadastro.jsf" ajax="false" rendered="#{!identity.loggedIn}">
+				<h:outputText value="#{resources['label.geral.cadastro']}" />
+			</p:commandLink>
+	    </div>
+	</h:form>
+   </ui:define>
+</ui:composition>

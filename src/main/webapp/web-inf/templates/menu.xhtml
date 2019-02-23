@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.org/seam/faces"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<h:form id="formMenu">
+		<p:growl id="messages" showDetail="false" autoUpdate="true"/>
+		
+		<p:menubar>
+			<p:menuitem value="#{resources['label.geral.mapa']}" immediate="true"
+					action="/pages/mapa/mapa.jsf" icon="ui-icon-comment" />
+			
+			<p:menuitem value="#{resources['label.geral.cadastro']}" immediate="true"
+					action="/pages/proprietario/cadastro.jsf" icon="ui-icon-comment" 
+					rendered="#{customIdentity.usuarioMaster}"/>		
+			
+			<p:submenu label="#{resources['label.geral.administracao']}" icon="ui-icon-gear" 
+					rendered="#{customIdentity.usuarioAdmin}">
+				<p:submenu label="#{resources['label.geral.proprietario']}" 
+						icon="ui-icon-contact">
+					<p:menuitem value="#{resources['label.geral.proprietarios']}" 
+							icon="ui-icon-clipboard" action="/pages/admin/proprietarios.jsf" />
+					<p:menuitem value="#{resources['label.geral.cadastro']}" immediate="true"
+							action="/pages/proprietario/cadastro.jsf" icon="ui-icon-document" />
+				</p:submenu>
+			</p:submenu>
+			
+			<f:facet name="options">
+				<h:outputText value="#{customIdentity.usuario.nome}" rendered="#{identity.loggedIn}"/>
+				<p:spacer width="10px" />
+				<p:commandLink value="#{resources['label.geral.sair']}"
+						action="#{customAuthenticator.logout}" process="@this" update="formMenu" rendered="#{identity.loggedIn}"/>
+			</f:facet>
+		</p:menubar>
+		
+	</h:form>	
+	
+</ui:composition>

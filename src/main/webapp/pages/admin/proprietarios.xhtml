@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:p="http://primefaces.org/ui"
+   template="/WEB-INF/templates/default.xhtml">
+   <ui:define name="content">
+
+		<h:form id="listagemProprietario">
+
+			<p:outputPanel id="idPanelCid">
+				<input type="hidden" id="cid" name="cid" value="#{adminViewHelper.conversation.id}" />
+			</p:outputPanel>
+	
+			<p:growl id="messages" showDetail="false" autoUpdate="true"/>
+	
+	        <p:dataTable id="tableProprietarios" var="proprietario" 
+	        		value="#{adminViewHelper.adminTO.listaProprietario}"
+	        		emptyMessage="#{resources['label.geral.nenhumRegistroEncontrado']}">
+	        	
+	        	<f:facet name="header">
+	        		<h:outputText value="#{resources['label.geral.proprietarios']}"/>
+	        	</f:facet>
+	        	<p:column headerText="#{resources['label.geral.nome']}">
+	        		<h:outputText value="#{proprietario.pessoaFisica.nome}" 
+	        				rendered="#{proprietario.pessoaFisica ne null}"/>
+	        		<h:outputText value="#{proprietario.pessoaJuridica.nomeFantasia}" 
+	        				rendered="#{proprietario.pessoaJuridica ne null}"/>
+	        	</p:column>
+	        	
+	        </p:dataTable>
+	     
+		</h:form>
+   	</ui:define>
+</ui:composition>

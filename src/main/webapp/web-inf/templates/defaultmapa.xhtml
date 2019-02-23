@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   	xmlns:h="http://java.sun.com/jsf/html"
+   	xmlns:ui="http://java.sun.com/jsf/facelets"
+   	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:view contentType="text/html">
+	<h:head>
+		<title>#{resources['label.geral.tituloProjeto']}</title>
+		<meta name="viewport" http-equiv="Content-Type" content="text/html; charset=utf-8; initial-scale=1.0, user-scalable=no" />
+	   	<h:outputStylesheet name="css/screen.css" />
+           
+		<style type="text/css">
+			html { height: 100% }
+		  	body { height: 100%; margin: 0px; padding: 0px }
+		  	#map_canvas { height: 100% }
+		</style>
+		
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.11&amp;sensor=false&amp;region=pt-br&amp;key=AIzaSyB6Dmh8pF-Os0T4kEJm58SWI9ojc4jab70"/>
+
+		<script type="text/javascript">
+
+			var poly;
+			var map;
+			var markersArray = [];
+			var seguir = true;
+
+			function initialize() {
+				var myLatlng = new google.maps.LatLng(-16.015333,-48.046108);
+		  		var mapOptions = {
+				    zoom: 16,
+				    center: myLatlng,
+				    mapTypeId: google.maps.MapTypeId.ROADMAP
+		  		};
+
+		  		map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+		  		var polyOptions = {
+			    	strokeColor: '#000000',
+			    	strokeOpacity: 1.0,
+			    	strokeWeight: 3
+		  		}
+		  		poly = new google.maps.Polyline(polyOptions);
+		  		poly.setMap(map);
+		  		converterJsonParaObjetos();
+			}
+
+			function converterJsonParaObjetos() {
+				var jsonObjetos = document.getElementById('formMapa:hiddenPosicoes').value;
+				var obj = eval("(" + jsonObjetos + ")");
+				if (obj.listaPosicao.length > 0) {
+					for (j = 0; j != obj.listaPosicao.length; j++) {
+						var nome = obj.nome;
+						var chave = obj.listaPosicao[j].chave;
+						var dataHora = obj.listaPosicao[j].dataHora;
+						var latitude = obj.listaPosicao[j].latitude;
+						var longitude = obj.listaPosicao[j].longitude;
+						var endereco = obj.listaPosicao[j].endereco;
+						var velocidade = obj.listaPosicao[j].velocidade;
+						var latLng = new google.maps.LatLng(latitude, longitude);
+						var path = poly.getPath();
+						if (path.getLength() > 1) {
+							if (path.getAt(path.getLength()-1).equals(latLng)) {
+								path.setAt(path.getLength()-1, latLng);
+								markersArray[markersArray.length-1].setMap(null);
+								markersArray.pop();
+							} else {
+								path.push(latLng);
+								map.setCenter(latLng);
+							}
+						} else {
+							path.push(latLng);
+							map.setCenter(latLng);
+						}
+						var descricao = "Nome: " + nome + "\n";
+						descricao += "Velocidade: " + velocidade + " km/h \n";
+						descricao += "Data e Hora: " + dataHora + "\n";
+						descricao += "Endereço: " + endereco;
+						var p = markersArray.length;
+						var marker = new google.maps.Marker({
+					    	position: latLng,
+					    	title: p.toString(),
+					    	map: map
+					  	});
+						markersArray.push(marker);
+						attachSecretMessage(marker, descricao);
+					}
+				} else {
+					if (!seguir) {
+						poly.getPath().clear();
+						for (j = 0; j != markersArray.length; j++) {
+							markersArray[j].setMap(null);
+						}
+						markersArray.length = 0;
+					}
+				}
+			}
+			
+			function attachSecretMessage(marker, descricao) {
+				var infowindow = new google.maps.InfoWindow(
+						{ content: descricao,
+				        size: new google.maps.Size(40,80)
+				});
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.open(map,marker);
+				});
+			} 
+			
+			function definirSeguir(bool) {
+				seguir = bool;
+			}
+			
+			function loadScript() {
+				var script = document.createElement("script");
+			  	script.type = "text/javascript";
+			  	var url = "http://maps.google.com/maps/api/js?v=3.11&amp;sensor=false";
+			  	url += "&amp;region=pt-br";
+			  	url += "&amp;key=AIzaSyB6Dmh8pF-Os0T4kEJm58SWI9ojc4jab70";
+			  	url += "&amp;callback=initialize";
+			  	script.src = url;
+			  	document.body.appendChild(script);
+			}
+
+			window.onload = loadScript;
+
+		</script>
+	</h:head>
+
+	<h:body>
+		<h:form id="formMapa">
+			<p:outputPanel id="idPanelCid">
+				<input type="hidden" id="cid" name="cid" value="#{mapaViewHelper.conversation.id}" />
+			</p:outputPanel>
+			
+			<p:growl id="messages" showDetail="false" autoUpdate="true"/>
+			
+			<p:layout fullPage="true" >
+				
+				<p:layoutUnit id="layoutUnitLeft" position="west" size="285" maxSize="285"
+						collapsible="false" collapsed="false" resizable="false" >
+					<p:spacer width="2px"/>
+					<p:menubar>
+						<p:submenu label="#{customIdentity.usuario.nome}" icon="ui-icon-person" >
+							<p:menuitem value="#{resources['label.geral.cadastro']}" immediate="true" 
+									icon="ui-icon-clipboard" action="/pages/proprietario/cadastro.jsf"/>
+							<p:menuitem value="#{resources['label.geral.sair']}" immediate="true"
+									action="#{customAuthenticator.logout}" icon="ui-icon-close" />
+						</p:submenu>
+					</p:menubar>					
+					
+					<p:accordionPanel id="accordionMenu">
+						<p:tab title="#{resources['label.geral.objetosRastreados']}">
+							<p:panelGrid columns="2" id="panelOpcoes">
+								<h:outputLabel value="#{resources['label.geral.seguir']}" />				
+								<p:selectBooleanButton label="" value="#{mapaViewHelper.seguir}" onLabel="#{resources['label.geral.sim']}" 
+										offLabel="#{resources['label.geral.nao']}" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax  process="@this" />
+								</p:selectBooleanButton>
+							</p:panelGrid>
+							<p:orderList value="#{mapaViewHelper.mapaTO.listaObjetoRastreado}"
+									var="objetoRastreado" itemValue="#{objetoRastreado}" converter="objetoRastreado">
+								<p:column>
+									<p:commandLink actionListener="#{mapaViewHelper.selecionarObjetoRastreado}" 
+											value="#{objetoRastreado.nome}" oncomplete="converterJsonParaObjetos();"
+											update=":formMapa:hiddenPosicoes">
+										<f:setPropertyActionListener target="#{mapaViewHelper.mapaTO.objetoRastreado.imei}" 
+												value="#{objetoRastreado.imei}" />
+									</p:commandLink>
+								</p:column>
+							</p:orderList>
+						</p:tab>
+						<p:tab title="#{resources['label.geral.pesquisar']}">
+							<p:panelGrid columns="2" id="panelData">
+								<h:outputLabel value="#{resources['label.geral.dataInicio']}" />
+								<p:calendar value="#{mapaViewHelper.mapaTO.objetoRastreadoFiltro.dataInicial}" 
+										pattern="dd/MM/yyyy HH:mm" locale="pt" mindate="#{customIdentity.usuario.dataCadastro}"
+										maxdate="#{mapaViewHelper.dataAtual}"/>
+								<h:outputLabel value="#{resources['label.geral.dataFim']}" />		
+								<p:calendar value="#{mapaViewHelper.mapaTO.objetoRastreadoFiltro.dataFinal}" 
+										pattern="dd/MM/yyyy HH:mm" locale="pt" mindate="#{customIdentity.usuario.dataCadastro}"
+										maxdate="#{mapaViewHelper.dataAtual}" />
+								<p:column colspan="2">
+									<p:commandButton action="#{mapaViewHelper.filtrar()}" 
+										update=":formMapa:hiddenPosicoes, :formMapa:accordionMenu:panelOpcoes"
+										value="#{resources['label.geral.pesquisar']}" 
+										oncomplete="definirSeguir(false); converterJsonParaObjetos();"/>
+								</p:column>
+							</p:panelGrid>							
+						</p:tab>
+					</p:accordionPanel>
+				</p:layoutUnit>
+				
+				<p:layoutUnit id="layoutUnitCenter" position="center" >
+					<p:poll interval="20" listener="#{mapaViewHelper.atualizar()}" update="formMapa:hiddenPosicoes" 
+							oncomplete="converterJsonParaObjetos();" process="@this"/>
+					<div id="map_canvas" style="width:100%; height:100%"/>
+	        	</p:layoutUnit>
+			</p:layout>
+			<h:inputHidden value="#{mapaViewHelper.mapaTO.posicoes}" id="hiddenPosicoes"/>
+		</h:form>
+	</h:body>
+</f:view>
+</html>

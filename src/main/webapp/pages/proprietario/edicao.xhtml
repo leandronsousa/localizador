@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:p="http://primefaces.org/ui"
+   template="/WEB-INF/templates/default.xhtml">
+   <ui:define name="content">
+
+	<h:form id="formEdicaoProprietario">
+
+		<p:outputPanel id="idPanelCid">
+			<input type="hidden" id="cid" name="cid" value="#{administracaoViewHelper.conversation.id}" />
+		</p:outputPanel>
+
+		<p:growl id="messages" showDetail="false" autoUpdate="true"/>
+        
+        <p:panel header="#{resources['label.geral.cadastroProprietario']}" 
+        		id="panelCadastroProprietario">
+	    	<p:panelGrid columns="2">
+	        	<h:outputLabel for="radioTipoPessoa" value="#{resources['label.geral.tipoPessoa']}"/>
+	        	<p:selectOneRadio id="radioTipoPessoa" required="true" immediate="true"
+	         			valueChangeListener="${administracaoViewHelper.selecionarTipoPessoa}"
+	         			value="#{administracaoViewHelper.administracaoTO.proprietario.tipoPessoa}">
+	         		<f:selectItem itemValue="#{resources['label.geral.pessoaFisica']}" 
+	         				itemLabel="#{resources['label.geral.pessoaFisica']}"/>
+	         		<f:selectItem itemValue="#{resources['label.geral.pessoaJuridica']}" 
+	         				itemLabel="#{resources['label.geral.pessoaJuridica']}"/>
+					<p:ajax immediate="true" event="change" update="formCadastroProprietario"/>
+	         	</p:selectOneRadio>
+	         </p:panelGrid>
+			<p:spacer height="2px"/>	         
+	         <p:panelGrid columns="2" id="gridPessoaFisica" 
+	         		rendered="#{administracaoViewHelper.administracaoTO.proprietario.tipoPessoa eq 'PF'}">
+	         	<h:outputLabel for="inputNomePessoaFisica" value="#{resources['label.geral.nome']}"/>
+	         	<p:inputText value="#{administracaoViewHelper.administracaoTO.proprietario.pessoaFisica.nome}" 
+	         		required="true" maxlength="60" id="inputNomePessoaFisica" size="50"/>
+	         	<h:outputLabel for="inputCpf" value="#{resources['label.geral.cpf']}"/>
+	         	<p:inputMask mask="999.999.999-99" required="true" id="inputCpf" 
+	         			valueChangeListener="#{administracaoViewHelper.validarCpfProprietario}"
+	         			value="#{administracaoViewHelper.administracaoTO.proprietario.pessoaFisica.cpf}">
+					<p:ajax immediate="true" event="blur" update="formCadastroProprietario"
+							process="formCadastroProprietario:panelCadastroProprietario"/>
+				</p:inputMask>	         
+	         </p:panelGrid>
+	         <p:panelGrid columns="2" id="gridPessoaJuridica"
+	         		rendered="#{administracaoViewHelper.administracaoTO.proprietario.tipoPessoa eq 'PJ'}">
+	         	<h:outputLabel for="inputRazaoSocial" value="#{resources['label.geral.razaoSocial']}"/>
+	         	<p:inputText value="#{administracaoViewHelper.administracaoTO.proprietario.pessoaJuridica.razaoSocial}"
+	         			required="true" maxlength="60" id="inputRazaoSocial" size="50"/>
+	         	<h:outputLabel for="inputNomeFantasia" value="#{resources['label.geral.nomeFantasia']}"/>
+	         	<p:inputText value="#{administracaoViewHelper.administracaoTO.proprietario.pessoaJuridica.nomeFantasia}" 
+	         			required="true" maxlength="60" id="inputNomeFantasia" size="50"/>
+	         	<h:outputLabel for="inputCnpj" value="#{resources['label.geral.cnpj']}"/>
+	         	<p:inputMask mask="99.999.999/9999-99" required="true" id="inputCnpj"
+	         			valueChangeListener="#{administracaoViewHelper.validarCnpjProprietario}"
+	         			value="#{administracaoViewHelper.administracaoTO.proprietario.pessoaJuridica.cnpj}">
+	         		<p:ajax immediate="true" event="blur" update="formCadastroProprietario"
+	         				process="formCadastroProprietario:panelCadastroProprietario"/>
+	         	</p:inputMask>
+	         </p:panelGrid>
+	     </p:panel>
+	     <p:spacer height="2px"/>
+	     <p:panel id="panelDadosRastreamento" header="#{resources['label.geral.dadosRastreamento']}" 
+	     		rendered="#{not empty administracaoViewHelper.administracaoTO.proprietario.pessoaFisica.cpf
+	     				or not empty administracaoViewHelper.administracaoTO.proprietario.pessoaJuridica.cnpj}">
+	     	<p:panelGrid columns="2" id="gridDadosRastreamento">
+				<h:outputLabel for="inputImei" value="#{resources['label.geral.imei']}"/>
+				<p:inputText value="#{administracaoViewHelper.administracaoTO.objetoRastreado.imei}" 
+						maxlength="15" id="inputImei"/>
+				<h:outputLabel for="inputNomeObjetoRastreado" value="#{resources['label.geral.nome']}"/>
+				<p:inputText value="#{administracaoViewHelper.administracaoTO.objetoRastreado.nome}" 
+						maxlength="60" id="inputNomeObjetoRastreado"/>
+				<h:outputLabel for="inputDDD" value="#{resources['label.geral.ddd']}"/>
+				<p:inputText value="#{administracaoViewHelper.administracaoTO.objetoRastreado.ddd}"
+						maxlength="2" id="inputDDD" size="3"/>
+				<h:outputLabel for="inputTelefone" value="#{resources['label.geral.telefone']}"/>
+				<p:inputText value="#{administracaoViewHelper.administracaoTO.objetoRastreado.telefone}"
+						maxlength="9" id="inputTelefone" size="10"/>
+				<f:facet name="footer">
+	     			<p:commandButton value="#{resources['label.geral.incluir']}"
+	     					update="formCadastroProprietario" partialSubmit="true" ajax="true"
+	     					process="formCadastroProprietario:panelDadosRastreamento"
+	     					icon="ui-icon-plus" style="margin:0" action="#{administracaoViewHelper.incluirObjetoRastreado}"/>
+	     		</f:facet>
+	     	</p:panelGrid>
+	     	<p:spacer height="2px"/>
+	     	<p:dataTable id="tableObjetosCadastrados" var="objetoRastreado" editable="true"
+	     			rendered="#{not empty administracaoViewHelper.administracaoTO.proprietario.listaObjetoRastreado}"	
+	     			value="#{administracaoViewHelper.administracaoTO.proprietario.listaObjetoRastreado}">
+	     		<f:facet name="header">
+	     			<h:outputText value="#{resources['label.geral.objetosRastreados']}"/>
+	     		</f:facet>
+	     		<p:ajax event="rowEdit" listener="#{administracaoViewHelper.editarObjetoRastreado}" 
+	     				update=":formCadastroProprietario:messages"/>
+	     		<p:ajax event="rowEditCancel" listener="#{administracaoViewHelper.cancelarEdicaoObjetoRastreado}" 
+	     				update=":formCadastroProprietario:messages"/>
+	     		<p:column headerText="#{resources['label.geral.imei']}">
+	     			<p:cellEditor>
+		     			<f:facet name="output">
+		     				<h:outputText value="#{objetoRastreado.imei}"/>
+		     			</f:facet>
+		     			<f:facet name="input">
+		     				<p:inputText value="#{objetoRastreado.imei}" maxlength="15" required="true"/>
+		     			</f:facet>
+		     		</p:cellEditor>
+	     		</p:column>
+	     		<p:column headerText="#{resources['label.geral.nome']}">
+	     			<p:cellEditor>
+		     			<f:facet name="output">
+			     			<h:outputText value="#{objetoRastreado.nome}"/>
+		     			</f:facet>
+		     			<f:facet name="input">
+		     				<p:inputText value="#{objetoRastreado.nome}" maxlength="60" required="true"/>
+		     			</f:facet>
+		     		</p:cellEditor>
+	     		</p:column>
+	     		<p:column headerText="#{resources['label.geral.ddd']}">
+					<p:cellEditor>
+						<f:facet name="output">
+			     			<h:outputText value="#{objetoRastreado.ddd}"/>
+		     			</f:facet>
+		     			<f:facet name="input">
+		     				<p:inputText value="#{objetoRastreado.ddd}" maxlength="2" required="true"/>
+		     			</f:facet>
+		     		</p:cellEditor>
+	     		</p:column>
+	     		<p:column headerText="#{resources['label.geral.telefone']}">
+	     			<p:cellEditor>
+		     			<f:facet name="output">
+			     			<h:outputText value="#{objetoRastreado.telefone}"/>
+		     			</f:facet>
+		     			<f:facet name="input">
+		     				<p:inputText value="#{objetoRastreado.telefone}" maxlength="9" required="true"/>
+		     			</f:facet>
+		     		</p:cellEditor>
+	     		</p:column>
+	     		<p:column>
+	     			<p:rowEditor/>
+	     		</p:column>
+	     	</p:dataTable>
+	     </p:panel>
+	     <p:spacer height="2px"/>
+	     <p:panel id="panelUsuarios" header="#{resources['label.geral.usuarios']}" 
+	     		rendered="#{not empty administracaoViewHelper.administracaoTO.proprietario.listaObjetoRastreado}">
+	     	<p:panelGrid columns="2" id="gridDadosUsuarios">
+	     		<h:outputLabel for="inputNomeUsuario" value="#{resources['label.geral.nome']}"/>
+	     		<p:inputText value="#{administracaoViewHelper.administracaoTO.usuario.nome}" 
+	         			maxlength="60" id="inputNomeUsuario" size="50"/>
+	         	<h:outputLabel for="inputPerfilUsuario" value="#{resources['label.geral.perfil']}"/>
+	     		<p:selectOneMenu id="inputPerfilUsuario" label="#{resources['label.geral.perfil']}"
+	     				value="#{administracaoViewHelper.administracaoTO.usuario.perfilUsuario.chave}">
+	     			<f:selectItem itemValue="" itemLabel="#{resources['label.geral.selecione']}" />
+	     			<f:selectItems value="#{combosBean.listaPerfilUsuario}" var="perfilUsuario"
+	     					itemValue="#{perfilUsuario.chave}" itemLabel="#{perfilUsuario.nome}"/>
+	     		</p:selectOneMenu>
+	         	<h:outputLabel for="inputLoginUsuario" value="#{resources['label.geral.login']}"/>
+	         	<p:inputText value="#{administracaoViewHelper.administracaoTO.usuario.login}"
+	         			maxlength="20" id="inputLoginUsuario" size="20"
+	         			valueChangeListener="#{administracaoViewHelper.validarLogin}">
+	         		<p:ajax immediate="true" process="@this" event="blur" update="@this" />
+	         	</p:inputText>
+	         	<h:outputLabel for="senhaUsuario" value="#{resources['label.geral.senha']}"/>
+	         	<p:password value="#{administracaoViewHelper.administracaoTO.usuario.senha}" size="15" id="senhaUsuario"
+	         		 	feedback="true" maxlength="12" promptLabel="#{resources['label.geral.senha']}" 
+	         		 	strongLabel="#{resources['label.geral.senhaForte']}"
+	         			goodLabel="#{resources['label.geral.senhaBoa']}" weakLabel="#{resources['label.geral.senhaFraca']}"/>
+	         	<f:facet name="footer">
+	     			<p:commandButton value="#{resources['label.geral.incluir']}" ajax="true" partialSubmit="true"
+	     					update="formCadastroProprietario" process="formCadastroProprietario:panelUsuarios"
+	     					icon="ui-icon-plus" style="margin:0" action="#{administracaoViewHelper.incluirUsuario}"/>
+	     		</f:facet>	
+	     	</p:panelGrid>
+	     	<p:spacer height="2px"/>
+	     	<p:dataTable id="tableUsuarios" var="usuario"
+	     			rendered="#{not empty administracaoViewHelper.administracaoTO.proprietario.listaUsuario}"
+	     			value="#{administracaoViewHelper.administracaoTO.proprietario.listaUsuario}">
+	     		<f:facet name="header">
+	     			<h:outputText value="#{resources['label.geral.usuarios']}"/>
+	     		</f:facet>
+	     		<p:column headerText="#{resources['label.geral.nome']}">
+	     			<h:outputText value="#{usuario.nome}"/>
+	     		</p:column>
+	     		<p:column headerText="#{resources['label.geral.perfil']}">
+	     			<h:outputText value="#{usuario.perfilUsuario.nome}"/>
+	     		</p:column>
+	     		<p:column headerText="#{resources['label.geral.login']}">
+	     			<h:outputText value="#{usuario.login}"/>
+	     		</p:column>
+	     	</p:dataTable>
+	     </p:panel>
+	     <p:panel id="panelButtons">
+	     	<p:commandButton value="#{resources['label.geral.gravar']}" action="#{administracaoViewHelper.gravar}"
+	     			ajax="false" disabled="#{not administracaoViewHelper.cadastroValido}"/>
+	     	<!-- <p:commandButton value="#{resources['label.geral.limpar']}">
+	     		<p:resetInput target="@form" />
+	     	</p:commandButton> -->
+	     </p:panel>
+		</h:form>
+   </ui:define>
+</ui:composition>

@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   	xmlns:h="http://java.sun.com/jsf/html"
+   	xmlns:ui="http://java.sun.com/jsf/facelets"
+   	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.org/seam/faces"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<f:view contentType="text/html">
+
+		<h:head>
+		 	<f:facet name="first">
+				<title>#{resources['label.geral.tituloProjeto']}</title>
+                <meta http-equiv="X-UA-Compatible" content="EmulateIE8" />
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+			   	<h:outputStylesheet name="css/screen.css" />
+            </f:facet>
+		</h:head>
+
+		<h:body>
+			<p:layout fullPage="true">
+				<p:layoutUnit id="layoutUnitTopo" position="north" size="145">
+		   			<div id="divTopo" style="align: center">
+		   				<ui:include src="/WEB-INF/templates/topo.xhtml"/>
+		   			</div>
+				</p:layoutUnit>
+				
+				<p:layoutUnit id="layoutUnitCenter" position="center">
+					<div id="container">
+				      	<div id="content">
+				         	<ui:insert name="content"/>
+				      	</div>
+						<div id="footer">
+				    	</div>
+				  	</div>
+                </p:layoutUnit>
+			</p:layout>
+		</h:body>
+
+	</f:view>
+
+</html>

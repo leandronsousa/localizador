@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.org/seam/faces"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<p:panelMenu id="panelMenuMapa">
+		<p:submenu label="#{resources['label.geral.objeto']}">
+			<p:orderList id="listaObjetos" value="#{mapaViewHelper.mapaTO.listaObjetoRastreadoAcao}"
+					var="objetoRastreado" itemValue="#{objetoRastreado}" 
+					controlsLocation="left" converter="objetoRastreado">
+				<p:column>
+					#{objetoRastreado.nome}
+				</p:column>
+			</p:orderList>
+		</p:submenu>
+	</p:panelMenu>
+	
+</ui:composition>
